@@ -81,10 +81,28 @@ featured_condition_size: 1              # A tag will be featured if the size of 
 # Friends
 friends: [
     {
-        title: "广告位招租：仅售42,9496,7296元／(链接·月)",
+        title: "广告位招租",
         href: "#"
     },{
-        title: "Adv placeholder: only ¥4,294,967,296 per link per month",
+        title: "广告位招租",
+        href: "#"
+    },{
+        title: "广告位招租",
+        href: "#"
+    },{
+        title: "广告位招租",
+        href: "#"
+    },{
+        title: "广告位招租",
+        href: "#"
+    },{
+        title: "广告位招租",
+        href: "#"
+    },{
+        title: "广告位招租",
+        href: "#"
+    },{
+        title: "广告位招租",
         href: "#"
     }
 ]
