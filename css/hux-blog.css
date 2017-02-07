@@ -39,7 +39,7 @@
   width: 80%;
   display: block;
   border-radius: 5px;
-  margin-bottom: 20px;
+  margin: 0 auto 20px;
 }
 .sidebar-container .short-about p {
   margin-top: 0px;
@@ -96,7 +96,6 @@ article {
 }
 blockquote {
   color: #808080;
-  font-style: italic;
   font-size: 0.95em;
   margin: 20px 0 20px;
 }

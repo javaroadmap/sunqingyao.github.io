@@ -1,0 +1,98 @@
+---
+layout:     post
+title:      "Inline, static inline与extern inline"
+subtitle:   "记一次厦门之行引发的思考"
+date:       2017-02-07
+author:     "Sun Qingyao"
+header-img: "img/post-bg-inline.jpg"
+tags:
+    - life
+    - programming
+    - c-lang
+---
+
+前两天我和家里人去厦门旅游，在厦大的芙蓉隧道里我看到了[一幅涂鸦][1]，右上角的那段C语言代码（说它是C++也不是不行）看起来很有意思：
+
+```c
+inline void junior_live()
+{
+  __asm {
+  mov ecx 365;
+  _everyday:
+      push ecx;
+      call 上课_自习_考试;
+      pop ecx;
+      loop _everyday;
+      }
+}
+
+```
+
+这种编程风格粗放得让人有些不爽，但这不是我今天想说的。真正使我感兴趣的是这份代码中的`inline`。`inline`关键字最早是在C99中加入的，它的用途是**建议**编译器内联函数定义，即在调用点内展开函数，或者说把调用点替换成函数体内的语句。这样做的好处是在不降低程序可读性的前提下节约函数调用时间、提高运行速度。需要注意的是，这个关键词只是起到**建议**的作用，编译器可以选择忽略。
+
+为了突出重点，我们先对原始代码做一些修改：
+
+```c
+void study(void) {
+    // TODO: implement this
+    return;
+}
+
+inline void junior_life(void) {
+    while(1) {
+        study();
+    }
+}
+
+int main(void) {
+    junior_life();
+}
+
+```
+
+上面的代码在macOS下使用`clang -std=c99 -pedantic` 编译时出现了链接错误：
+
+    Undefined symbols for architecture x86_64:
+      "_junior_life", referenced from:
+          _main in inline-b45b65.o
+    ld: symbol(s) not found for architecture x86_64
+    clang: error: linker command failed with exit code 1 (use -v to see invocation)
+
+修复这个错误的方法有很多，其中一种是在`inline`前面加上`static`关键字。这使得`junior_life`具有internal linkage，从而保证了visibility：
+
+```c
+void study(void) {
+    // TODO: implement this
+    return;
+}
+
+static inline void junior_life(void) {
+    while(1) {
+        study();
+    }
+}
+
+int main(void) {
+    junior_life();
+}
+
+```
+
+这样程序就能顺利地编译运行了。事实上，用`extern inline`也可以解决这个问题，但是可能导致multiple definition错误，因此不推荐使用。
+
+说清楚结论很容易，但是这一切背后的原理却涉及definition、declaration、visibility和linkage等诸多不怎么好理解的概念，甚至还有GNU C与ISO C的种种恩怨，所以我不打算在这个问题上过分纠结。如果有人实在想刨根问底，可以看看下面的链接：
+
+- [C99: WG14/N1256 Septermber 7, 2007 ISO/IEC 9899:TC3][2]
+- [C11: N1570 April 12, 2011 ISO/IEC 9899:201x][3]
+- [extern inline][4]
+- [Is “inline” without “static” or “extern” ever useful in C99?][5]
+- [What's the difference between “static” and “static inline” function?][6]
+
+
+
+  [1]: /img/in-post/inline/graffiti.jpg
+  [2]: http://port70.net/~nsz/c/c99/n1256.html
+  [3]: http://port70.net/~nsz/c/c11/n1570.html
+  [4]: http://stackoverflow.com/q/216510/5399734
+  [5]: http://stackoverflow.com/q/6312597/5399734
+  [6]: http://stackoverflow.com/q/7762731/5399734
